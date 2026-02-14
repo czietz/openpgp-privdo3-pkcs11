@@ -15,12 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\empty-pkcs11.c">
+    <ClCompile Include="..\..\..\src\openpgp-privdo3-pkcs11.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\empty-pkcs11.h">
+    <ClInclude Include="..\..\..\src\openpgp-privdo3-pkcs11.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,7 +1,0 @@
-EMPTYPKCS11 {
-  global:
-	C_*;
-  local:
-	*;
-};
-

@@ -1,4 +1,6 @@
 /*
+ *  Copyright 2026 Christian Zietz <czietz@gmx.net>
+ *
  *  Copyright 2011-2025 The Pkcs11Interop Project
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,11 +16,13 @@
  *  limitations under the License.
  */
 
-/*
- *  Written for the Pkcs11Interop project by:
- *  Jaroslav IMRICH <jimrich@jimrich.sk>
- */
-
+ /*
+  *  Written for the Pkcs11Interop project by:
+  *  Jaroslav IMRICH <jimrich@jimrich.sk>
+  *
+  *  Modified for OpenPGP-PrivDO3-PKCS11 by:
+  *  Christian Zietz <czietz@gmx.net>
+  */
 
 #include <stdio.h>
 #include <string.h>

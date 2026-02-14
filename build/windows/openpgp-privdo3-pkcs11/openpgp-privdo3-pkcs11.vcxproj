@@ -19,41 +19,62 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\empty-pkcs11.c" />
+    <ClCompile Include="..\..\..\src\openpgp-privdo3-pkcs11.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\empty-pkcs11.h" />
+    <ClInclude Include="..\..\..\src\openpgp-privdo3-pkcs11.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{078A7AAC-5D04-4270-868C-3585816EC8AD}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>emptypkcs11</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <ProjectName>openpgp-privdo3-pkcs11</ProjectName>
+  </PropertyGroup>
+
+  <!-- ============================================================
+       CONDITIONAL WINDOWS SDK SELECTION
+       ============================================================ -->
+
+  <!-- VS2017 -->
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '15.0'">
+    <PlatformToolset>v141</PlatformToolset>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+
+  <!-- VS2019 -->
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '16.0'">
+    <PlatformToolset>v142</PlatformToolset>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+
+  <!-- VS2022 -->
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '17.0'">
+    <PlatformToolset>v143</PlatformToolset>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
+
+
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -107,6 +128,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
+      <AdditionalDependencies>winscard.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -123,6 +145,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
+      <AdditionalDependencies>winscard.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -143,6 +166,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
+      <AdditionalDependencies>winscard.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -163,6 +187,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
+      <AdditionalDependencies>winscard.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

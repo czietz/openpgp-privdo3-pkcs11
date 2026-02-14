@@ -1,0 +1,105 @@
+name: Build snapshot
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup OS
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential gcc-multilib libpcsclite-dev
+
+    - name: Checkout source
+      uses: actions/checkout@v4
+      
+    - name: Build source
+      run: |
+        cd build/linux/
+        make
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: openpgp-privdo3-pkcs11-x64
+        path: |
+          build/linux/openpgp-privdo3-pkcs11-*.so
+          LICENSE.md
+          NOTICE.md
+          README.md
+
+  build-arm:
+    runs-on: ubuntu-24.04-arm
+
+    steps:
+    - name: Setup OS
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential gcc libpcsclite-dev
+
+    - name: Checkout source
+      uses: actions/checkout@v4
+      
+    - name: Build source
+      run: |
+        cd build/linux/
+        make
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: openpgp-privdo3-pkcs11-arm64
+        path: |
+          build/linux/openpgp-privdo3-pkcs11-*.so
+          LICENSE.md
+          NOTICE.md
+          README.md
+
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v4
+
+    - name: Build source
+      shell: cmd
+      run: |
+        cd build/windows/
+        build.bat
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: openpgp-privdo3-pkcs11-win
+        path: |
+          build/windows/openpgp-privdo3-pkcs11-*.dll
+          LICENSE.md
+          NOTICE.md
+          README.md
+
+  package:
+
+    needs: [build-linux, build-arm, build-windows]
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - uses: actions/download-artifact@v5
+      with:
+        path: release
+        merge-multiple: true
+
+    - name: Save binaries as snapshot release
+      uses: "czietz/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "latest"
+        prerelease: false
+        title: "Latest snapshot build"
+        files: |
+          release/**

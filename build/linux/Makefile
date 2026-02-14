@@ -1,22 +1,24 @@
 # Display exported symbols:
-#  nm -D empty-pkcs11.so | grep ' T '
+#  nm -D openpgp-privdo3-pkcs11.so | grep ' T '
 
 SRC_DIR=../../src
 
-CC= gcc
-ARCH_FLAGS= -m32
-CFLAGS= $(ARCH_FLAGS) -Wall -Wextra -Werror -O2 -I$(SRC_DIR)
-LIBNAME=empty-pkcs11-x86.so
+ARCH ?= $(shell uname -m)
+CC ?= gcc
+CFLAGS = $(ARCH_FLAGS) -Wall -Wextra -Werror -O2 -I$(SRC_DIR)
+CFLAGS  += $(shell pkg-config --cflags libpcsclite)
+LDFLAGS += $(shell pkg-config --libs libpcsclite)
+LIBNAME = openpgp-privdo3-pkcs11-$(ARCH).so
 
-all: empty-pkcs11.o
+all: openpgp-privdo3-pkcs11.o
 	$(CC) $(ARCH_FLAGS) -shared -o $(LIBNAME) \
 	-Wl,-soname,$(LIBNAME) \
-	-Wl,--version-script,empty-pkcs11.version \
-	empty-pkcs11.o
+	-Wl,--version-script,openpgp-privdo3-pkcs11.version \
+	openpgp-privdo3-pkcs11.o $(LDFLAGS)
 	strip --strip-all $(LIBNAME)
 
-empty-pkcs11.o: $(SRC_DIR)/empty-pkcs11.c $(SRC_DIR)/*.h
-	$(CC) $(CFLAGS) -fPIC -c $(SRC_DIR)/empty-pkcs11.c
+openpgp-privdo3-pkcs11.o: $(SRC_DIR)/openpgp-privdo3-pkcs11.c $(SRC_DIR)/*.h
+	$(CC) $(CFLAGS) -fPIC -c $(SRC_DIR)/openpgp-privdo3-pkcs11.c
 
 clean:
 	-rm -f *.o

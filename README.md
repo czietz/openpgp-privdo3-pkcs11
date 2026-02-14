@@ -1,101 +1,43 @@
-EMPTY-PKCS11
+OpenPGP-PrivDO3-PKCS11
 ===========
-**PKCS#11 library with the simplest possible implementation**
+**PKCS#11 library exposing Private Data Object 3 on OpenPGP cards**
 
-[![Windows](https://github.com/Pkcs11Interop/empty-pkcs11/actions/workflows/windows.yml/badge.svg?branch=master)](https://github.com/Pkcs11Interop/empty-pkcs11/actions/workflows/windows.yml)
-[![Linux](https://github.com/Pkcs11Interop/empty-pkcs11/actions/workflows/linux.yml/badge.svg?branch=master)](https://github.com/Pkcs11Interop/empty-pkcs11/actions/workflows/linux.yml)
-[![macOS](https://github.com/Pkcs11Interop/empty-pkcs11/actions/workflows/macos.yml/badge.svg?branch=master)](https://github.com/Pkcs11Interop/empty-pkcs11/actions/workflows/macos.yml)
-[![Android](https://github.com/Pkcs11Interop/empty-pkcs11/actions/workflows/android.yml/badge.svg?branch=master)](https://github.com/Pkcs11Interop/empty-pkcs11/actions/workflows/android.yml)
-[![iOS](https://github.com/Pkcs11Interop/empty-pkcs11/actions/workflows/ios.yml/badge.svg?branch=master)](https://github.com/Pkcs11Interop/empty-pkcs11/actions/workflows/ios.yml)
+## Purpose
 
-## Table of Contents
+OpenPGP-PrivDO3-PKCS11 is a library with the sole function to give PKCS#11-aware applications – in particular [VeraCrypt](https://veracrypt.io/) – access to the _Private Date Object 3_ (PrivDO3) on OpenPGP smart cards. It has been tested with [Nitrokey 3](https://www.nitrokey.com/) and Yubikey 5, and might also work with other OpenPGP cards.
 
-* [Overview](#overview)
-* [Download](#download)
-* [Building the source](#building-the-source)
-  * [Windows](#windows)
-  * [Linux](#linux)
-  * [macOS](#macos)
-  * [Android](#android)
-  * [iOS](#ios)
-* [License](#license)
-* [About](#about)
+The [OpenSC](https://github.com/OpenSC/OpenSC) middle-ware offers very limited support for Private Data Objects on OpenPGP cards, [only fully supporting _Private Data Object **1**_](https://github.com/OpenSC/OpenSC/blob/7f2e1062785d1442bab6f7378823c35ece5a91e8/src/pkcs15init/pkcs15-openpgp.c#L562-L569) (PrivDO1). Reading PrivDO1 is *not protected* by any PIN, making it unsuitable to, e.g., securely store VeraCrypt key files. PrivDO3 on the other hand can only be read or written after authentication with the user PIN:
 
-## Overview
+| Data object | READ access | WRITE access |
+| ----------- | ----------- | ------------ |
+| PrivDO1     | Always      | Verify PIN1  |
+| PrivDO3     | Verify PIN1 | Verify PIN1  |
 
-EMPTY-PKCS11 is minimalistic C library that implements [PKCS#11 v3.1](https://github.com/Pkcs11Interop/PKCS11-SPECS/tree/master/v3.1) API in the simplest possible way - all PKCS#11 functions except `C_GetFunctionList`, `C_GetInterfaceList` and `C_GetInterface` return `CKR_FUNCTION_NOT_SUPPORTED` return value.
+(Excerpt from the [*Functional Specification of the OpenPGP application on ISO Smart Card Operating Systems*, Version 3.4](https://gnupg.org/ftp/specs/OpenPGP-smart-card-application-3.4.pdf).)
 
-It has been tested on several desktop and mobile platforms and as such can be used as a lightweight skeleton for the development of portable PKCS#11 libraries.
+## Usage with VeraCrypt
 
-## Download
+Automatically built binaries are available in the [Releases](https://github.com/czietz/openpgp-privdo3-pkcs11/releases) section.
 
-Signed precompiled binaries as well as source code releases can be downloaded from [releases page](https://github.com/Pkcs11Interop/empty-pkcs11/releases).  
-Archives with source code are signed with [GnuPG key of Jaroslav Imrich](https://www.jimrich.sk/crypto/).  
-Windows libraries are signed with [code-signing certificate of Jaroslav Imrich](https://www.jimrich.sk/crypto/).
+Configure the `openpgp-privdo3-pkcs11*.dll/.so` matching to your operating system as PKCS#11 library under _Settings → Security tokens_. See the [VeraCrypt documentation](https://veracrypt.io/en/Keyfiles%20in%20VeraCrypt.html) for a description how to use security tokens for key file storage.
 
-## Building the source
+Each OpenPGP card can only store _one_ PrivDO3. To prevent accidental overwriting, OpenPGP-PrivDO3-PKCS11 refuses storing a new file when PrivDO3 already exists on the card. You have to delete the existing PrivDO3 before importing a new key file.
 
-### Windows
+❗ **ATTENTION:** If you delete a key file without having a backup, you lose access to all VeraCrypt volumes protected by this key file.
 
-Execute the build script on a 64-bit Windows machine with [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) (or newer) installed:
+## Limitations
 
-```
-cd build/windows/
-build.bat
-```
-
-The script should use Visual Studio to build both 32-bit (`empty-pkcs11-x86.dll`) and 64-bit (`empty-pkcs11-x64.dll`) versions of the library.
-
-### Linux
-
-Execute the build script on a 64-bit Linux machine with GCC, GNU Make and GCC multilib support installed (available in [build-essential](https://packages.ubuntu.com/noble/build-essential) and [gcc-multilib](https://packages.ubuntu.com/noble/gcc-multilib) packages on Ubuntu 24.04 LTS):
-
-```
-cd build/linux/
-sh build.sh
-```
-
-The script should use GCC to build both 32-bit (`empty-pkcs11-x86.so`) and 64-bit (`empty-pkcs11-x64.so`) versions of the library.
-
-### macOS
-
-Execute the build script on a 64-bit macOS machine with [Xcode](https://developer.apple.com/xcode/) and its "Command Line Tools" extension installed:
-
-```
-cd build/macos/
-sh build.sh
-```
-
-The script should use Clang to build Mach-O universal binary (`empty-pkcs11.dylib`) usable on both Apple silicon and Intel-based Mac computers.
-
-### Android
-
-Execute the build script on a 64-bit Windows machine with [Android NDK r26d](https://developer.android.com/ndk/) (or newer) unpacked in `C:\android-ndk` or in a folder defined by `ANDROID_NDK` environment variable:
-
-```
-cd build/android/
-build.bat
-```
-
-The script should use Android NDK to build the library for all supported architectures. Results will be located in `libs` directory and its subdirectories.
-
-### iOS
-
-Execute the build script on a 64-bit macOS machine with [Xcode](https://developer.apple.com/xcode/) and its "Command Line Tools" extension installed:
-
-```
-cd build/ios/
-sh build.sh
-```
-
-The script should use Xcode to build the library with iphonesimulator SDK (`libempty-pkcs11-iphonesimulator.a`) and iphoneos SDK (`libempty-pkcs11-iphoneos.a`).
+* By design, this library does not implement any cryptographic operations (such as signing, encrypting). Use OpenSC’s PKCS#11 library for cryptography.
+* OpenPGP cards are detected when the library is initialized, i.e., when VeraCrypt is started. Therefore, the token / card must be present when VeraCrypt is started.
+* The maximum size of PrivDO3 depends on the token. For example, Nitrokey 3 supports up to 4 KiB, whereas Yubikey 5 only supports 255 bytes. PrivDO3 is therefore best used to store very small files. A typical VeraCrypt key file is 64 bytes.
+* Each OpenPGP card can only store _one_ PrivDO3. To prevent accidental overwriting, OpenPGP-PrivDO3-PKCS11 refuses storing a new file when PrivDO3 already exists on the card. You have to delete the existing PrivDO3 before importing a new  file.
+* As stated in the license, this library is provided on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND.
 
 ## License
 
-EMPTY-PKCS11 is available under the terms of the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).  
+OpenPGP-PrivDO3-PKCS11 is available under the terms of the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 [Human friendly license summary](https://www.tldrlegal.com/license/apache-license-2-0-apache-2-0) is available at tldrlegal.com but the [full license text](LICENSE.md) always prevails.
 
-## About
+## Notice
 
-EMPTY-PKCS11 has been written for the [Pkcs11Interop](https://www.pkcs11interop.net/) project by [Jaroslav Imrich](https://www.jimrich.sk/).  
-Please visit project website - [pkcs11interop.net](https://www.pkcs11interop.net) - for more information.
+This product includes software developed at The Pkcs11Interop Project (http://www.pkcs11interop.net).
