@@ -202,7 +202,7 @@ static int put_privdo3(unsigned int slotID, BYTE* buffer, ULONG buflen)
 	return (rv == SCARD_S_SUCCESS) && (retlen >= 2) && (status[retlen - 2] == 0x90) && (status[retlen - 1] == 0);
 }
 
-CK_FUNCTION_LIST empty_pkcs11_2_40_functions = 
+CK_FUNCTION_LIST openpgp_pkcs11_2_40_functions =
 {
 	{0x02, 0x28},
 	&C_Initialize,
@@ -276,17 +276,17 @@ CK_FUNCTION_LIST empty_pkcs11_2_40_functions =
 };
 
 
-CK_INTERFACE empty_pkcs11_2_40_interface =
+CK_INTERFACE openpgp_pkcs11_2_40_interface =
 {
 	(CK_CHAR*)"PKCS 11",
-	&empty_pkcs11_2_40_functions,
+	&openpgp_pkcs11_2_40_functions,
 	0
 };
 
 
-CK_FUNCTION_LIST_3_0  empty_pkcs11_3_1_functions =
+CK_FUNCTION_LIST_3_0  openpgp_pkcs11_3_0_functions =
 {
-	{0x03, 0x01},
+	{0x03, 0x00},
 	&C_Initialize,
 	&C_Finalize,
 	&C_GetInfo,
@@ -382,10 +382,10 @@ CK_FUNCTION_LIST_3_0  empty_pkcs11_3_1_functions =
 };
 
 
-CK_INTERFACE empty_pkcs11_3_1_interface =
+CK_INTERFACE openpgp_pkcs11_3_0_interface =
 {
 	(CK_CHAR*)"PKCS 11",
-	&empty_pkcs11_3_1_functions,
+	&openpgp_pkcs11_3_0_functions,
 	0
 };
 
@@ -473,7 +473,7 @@ CK_DEFINE_FUNCTION(CK_RV, C_GetFunctionList)(CK_FUNCTION_LIST_PTR_PTR ppFunction
 	if (NULL == ppFunctionList)
 		return CKR_ARGUMENTS_BAD;
 
-	*ppFunctionList = &empty_pkcs11_2_40_functions;
+	*ppFunctionList = &openpgp_pkcs11_2_40_functions;
 
 	return CKR_OK;
 }
@@ -1389,13 +1389,13 @@ CK_DEFINE_FUNCTION(CK_RV, C_GetInterfaceList)(CK_INTERFACE_PTR pInterfacesList, 
 		if (*pulCount < 2)
 			return CKR_BUFFER_TOO_SMALL;
 
-		pInterfacesList[0].pInterfaceName = empty_pkcs11_2_40_interface.pInterfaceName;
-		pInterfacesList[0].pFunctionList = empty_pkcs11_2_40_interface.pFunctionList;
-		pInterfacesList[0].flags = empty_pkcs11_2_40_interface.flags;
+		pInterfacesList[0].pInterfaceName = openpgp_pkcs11_2_40_interface.pInterfaceName;
+		pInterfacesList[0].pFunctionList = openpgp_pkcs11_2_40_interface.pFunctionList;
+		pInterfacesList[0].flags = openpgp_pkcs11_2_40_interface.flags;
 
-		pInterfacesList[1].pInterfaceName = empty_pkcs11_3_1_interface.pInterfaceName;
-		pInterfacesList[1].pFunctionList = empty_pkcs11_3_1_interface.pFunctionList;
-		pInterfacesList[1].flags = empty_pkcs11_3_1_interface.flags;
+		pInterfacesList[1].pInterfaceName = openpgp_pkcs11_3_0_interface.pInterfaceName;
+		pInterfacesList[1].pFunctionList = openpgp_pkcs11_3_0_interface.pFunctionList;
+		pInterfacesList[1].flags = openpgp_pkcs11_3_0_interface.flags;
 	}
 
 	return CKR_OK;
@@ -1427,14 +1427,14 @@ CK_DEFINE_FUNCTION(CK_RV, C_GetInterface)(CK_UTF8CHAR_PTR pInterfaceName, CK_VER
 
 	if (NULL != pVersion)
 	{
-		if (pVersion->major == empty_pkcs11_2_40_functions.version.major && pVersion->minor == empty_pkcs11_2_40_functions.version.minor)
+		if (pVersion->major == openpgp_pkcs11_2_40_functions.version.major && pVersion->minor == openpgp_pkcs11_2_40_functions.version.minor)
 		{
-			*ppInterface = &empty_pkcs11_2_40_interface;
+			*ppInterface = &openpgp_pkcs11_2_40_interface;
 			return CKR_OK;
 		}
-		else if (pVersion->major == empty_pkcs11_3_1_functions.version.major && pVersion->minor == empty_pkcs11_3_1_functions.version.minor)
+		else if (pVersion->major == openpgp_pkcs11_3_0_functions.version.major && pVersion->minor == openpgp_pkcs11_3_0_functions.version.minor)
 		{
-			*ppInterface = &empty_pkcs11_3_1_interface;
+			*ppInterface = &openpgp_pkcs11_3_0_interface;
 			return CKR_OK;
 		}
 		else
@@ -1444,7 +1444,7 @@ CK_DEFINE_FUNCTION(CK_RV, C_GetInterface)(CK_UTF8CHAR_PTR pInterfaceName, CK_VER
 		}
 	}
 
-	*ppInterface = &empty_pkcs11_2_40_interface;
+	*ppInterface = &openpgp_pkcs11_3_0_interface;
 	return CKR_OK;
 }
 
