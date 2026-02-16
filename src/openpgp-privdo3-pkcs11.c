@@ -117,8 +117,8 @@ static int select_app(unsigned int slotID)
 	return (rv == SCARD_S_SUCCESS) && (retlen >= 2) && (status[retlen - 2] == 0x90) && (status[retlen - 1] == 0);
 }
 
-// TODO what is max
-#define MAX_PIN_LEN 32
+#define MIN_PIN_LEN 6   // according to spec
+#define MAX_PIN_LEN 127 // reported by Nitrokey and Yubikey
 
 static int verify_pin82(unsigned int slotID, BYTE pinlen, BYTE* pin)
 {
@@ -553,7 +553,7 @@ CK_DEFINE_FUNCTION(CK_RV, C_GetTokenInfo)(CK_SLOT_ID slotID, CK_TOKEN_INFO_PTR p
 	pInfo->ulTotalPrivateMemory = CK_UNAVAILABLE_INFORMATION;
 	pInfo->ulFreePrivateMemory = CK_UNAVAILABLE_INFORMATION;
 
-	pInfo->ulMinPinLen = 6;
+	pInfo->ulMinPinLen = MIN_PIN_LEN;
 	pInfo->ulMaxPinLen = MAX_PIN_LEN;
 
 	return CKR_OK;
@@ -707,8 +707,8 @@ CK_DEFINE_FUNCTION(CK_RV, C_Login)(CK_SESSION_HANDLE hSession, CK_USER_TYPE user
 		return CKR_USER_TYPE_INVALID;
 	}
 
-	if (ulPinLen > MAX_PIN_LEN) {
-		return CKR_ARGUMENTS_BAD;
+	if ((ulPinLen > MAX_PIN_LEN) || (ulPinLen < MIN_PIN_LEN)) {
+		return CKR_PIN_INCORRECT;
 	}
 
 	// re-select the OpenPGP app in case some other users has
