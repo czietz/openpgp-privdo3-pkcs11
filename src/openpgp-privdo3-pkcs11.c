@@ -27,9 +27,8 @@
 
 #include "openpgp-privdo3-pkcs11.h"
 
-#define no_init_all deprecated
-
 #ifdef _WIN32
+#define no_init_all deprecated
 #include <windows.h>
 #include <winscard.h>
 #else
@@ -201,6 +200,8 @@ static int put_privdo3(unsigned int slotID, BYTE* buffer, ULONG buflen)
 	// TODO map errors to PKCS#11 return codes
 	return (rv == SCARD_S_SUCCESS) && (retlen >= 2) && (status[retlen - 2] == 0x90) && (status[retlen - 1] == 0);
 }
+
+// PKCS#11 functions
 
 CK_FUNCTION_LIST openpgp_pkcs11_2_40_functions =
 {
@@ -438,18 +439,16 @@ CK_DEFINE_FUNCTION(CK_RV, C_Finalize)(CK_VOID_PTR pReserved)
 {
 	UNUSED(pReserved);
 
-	for (unsigned int k = 0; k < MAX_SESSIONS; k++)
-	{
+	for (unsigned int k = 0; k < MAX_SESSIONS; k++)	{
 		if (g_sessions[k].active) {
 			C_Logout(k);
+			SCardDisconnect(g_slots[g_sessions[k].session_info.slotID].hcard, SCARD_RESET_CARD);
 		}
 	}
 
 	memset(g_slots, 0, sizeof(g_slots));
 	memset(g_sessions, 0, sizeof(g_sessions));
 	g_slotcnt = 0;
-
-	// TODO: check if SCardReleaseContext disconnects from all cards
 
 	if (g_hContext) {
 		SCardReleaseContext(g_hContext);
