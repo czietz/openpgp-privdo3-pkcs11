@@ -779,11 +779,13 @@ CK_DEFINE_FUNCTION(CK_RV, C_CreateObject)(CK_SESSION_HANDLE hSession, CK_ATTRIBU
 	}
 
 	if ((CKO_DATA == cls) && token && priv) {
-		if (put_privdo3(g_sessions[hSession].session_info.slotID, contents, length)) {
+		if (length > MAX_DO_SIZE) {
+			retval = CKR_DEVICE_MEMORY;
+		} else if (put_privdo3(g_sessions[hSession].session_info.slotID, contents, length)) {
 			*phObject = MAGIC_OBJECT_NUM;
 			retval = CKR_OK;
 		} else {
-			retval = CKR_FUNCTION_FAILED;
+			retval = CKR_DEVICE_ERROR;
 		}
 	}
 
