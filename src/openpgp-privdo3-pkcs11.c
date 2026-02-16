@@ -711,6 +711,12 @@ CK_DEFINE_FUNCTION(CK_RV, C_Login)(CK_SESSION_HANDLE hSession, CK_USER_TYPE user
 		return CKR_ARGUMENTS_BAD;
 	}
 
+	// re-select the OpenPGP app in case some other users has
+	// unselected it since initialization
+	if (!select_app(g_sessions[hSession].session_info.slotID)) {
+		return CKR_DEVICE_REMOVED;
+	}
+
 	validated = verify_pin82(g_sessions[hSession].session_info.slotID, (BYTE)ulPinLen, pPin);
 
 	if (validated) {
