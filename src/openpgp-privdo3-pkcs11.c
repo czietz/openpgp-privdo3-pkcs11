@@ -82,6 +82,8 @@ SESSION g_sessions[MAX_SESSIONS];
 
 // OpenPGP smartcard functions
 
+// #define DEBUG_COMMANDS
+
 static LONG openpgp_command(unsigned int slotID, const BYTE* sendBuffer, DWORD sendLength, BYTE* recvBuffer, DWORD* recvLength)
 {
 	SCARD_IO_REQUEST pioSendPci;
@@ -93,6 +95,13 @@ static LONG openpgp_command(unsigned int slotID, const BYTE* sendBuffer, DWORD s
 		pioSendPci = *SCARD_PCI_T1;
 	}
 
+#ifdef DEBUG_COMMANDS
+	fprintf(stderr, "%ld =>", (long)sendLength);
+	for (unsigned int k = 0; k < sendLength; k++)
+		fprintf(stderr, " %02x", sendBuffer[k]);
+	fprintf(stderr, "\n");
+#endif
+
 	rv = SCardTransmit(g_slots[slotID].hcard,
 		&pioSendPci,
 		sendBuffer,
@@ -100,6 +109,16 @@ static LONG openpgp_command(unsigned int slotID, const BYTE* sendBuffer, DWORD s
 		NULL,
 		recvBuffer,
 		recvLength);
+
+#ifdef DEBUG_COMMANDS
+	fprintf(stderr, "(%ld)", (long)rv);
+	if (rv == SCARD_S_SUCCESS) {
+		fprintf(stderr, " %ld <=", (long)*recvLength);
+		for (unsigned int k = 0; k < *recvLength; k++)
+			fprintf(stderr, " %02x", recvBuffer[k]);
+	}
+	fprintf(stderr, "\n");
+#endif
 
 	return rv;
 }
