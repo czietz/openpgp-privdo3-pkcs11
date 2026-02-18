@@ -4,7 +4,7 @@ OpenPGP-PrivDO3-PKCS11
 
 ## Purpose
 
-OpenPGP-PrivDO3-PKCS11 is a library with the sole function to give PKCS#11-aware applications – in particular [VeraCrypt](https://veracrypt.io/) – access to the _Private Data Object 3_ (PrivDO3) on OpenPGP smart cards. It has been tested with [Nitrokey 3](https://www.nitrokey.com/) and YubiKey 5, and might also work with other OpenPGP cards.
+OpenPGP-PrivDO3-PKCS11 is a library with the sole function to give PKCS#11-aware applications – in particular [VeraCrypt](https://veracrypt.io/) – access to the _Private Data Object 3_ (PrivDO3) on OpenPGP smart cards. It has been tested with [Nitrokey 3](https://www.nitrokey.com/), [YubiKey 5](https://www.yubico.com/) and [Pico OpenPGP](https://github.com/polhenarejos/pico-openpgp), and might also work with other OpenPGP cards.
 
 The [OpenSC](https://github.com/OpenSC/OpenSC) middleware offers very limited support for Private Data Objects on OpenPGP cards, [fully supporting only _Private Data Object 1_](https://github.com/OpenSC/OpenSC/blob/7f2e1062785d1442bab6f7378823c35ece5a91e8/src/pkcs15init/pkcs15-openpgp.c#L562-L569) (PrivDO1). Reading PrivDO1 is *not protected* by any PIN, making it unsuitable for, e.g., securely storing VeraCrypt key files. PrivDO3, on the other hand, can only be read or written after authentication with the user PIN:
 
