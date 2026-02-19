@@ -1,4 +1,4 @@
-EMPTYPKCS11 {
+OPENPGPPRIVDO3PKCS11 {
   global:
 	C_*;
   local:
