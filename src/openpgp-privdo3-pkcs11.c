@@ -39,6 +39,10 @@
 #define min(X,Y) ((X) < (Y) ? (X) : (Y))
 #endif
 
+#ifndef _MSC_VER
+#define strcpy_s(dest,len,src) strlcpy(dest,src,len) // note different argument order!
+#endif
+
 SCARDCONTEXT g_hContext = (SCARDCONTEXT)0;
 
 #define MAX_SLOTS 8u
@@ -182,7 +186,8 @@ static int get_privdo3(unsigned int slotID, BYTE* buffer, ULONG buflen)
 
 	rv = openpgp_command(slotID, cmd_getdata, sizeof(cmd_getdata), status, &retlen);
 
-	if ((rv == SCARD_S_SUCCESS) && (retlen >= 2) && (status[retlen - 2] == 0x90) && (status[retlen - 1] == 0)) {
+	if ((rv == SCARD_S_SUCCESS) && (retlen >= 2) && (retlen <= sizeof(status)) &&
+		(status[retlen - 2] == 0x90) && (status[retlen - 1] == 0)) {
 		int bytes_to_copy;
 
 		filelen = retlen - 2;
@@ -436,13 +441,16 @@ CK_DEFINE_FUNCTION(CK_RV, C_Initialize)(CK_VOID_PTR pInitArgs)
 				if (rv == SCARD_S_SUCCESS) {
 					if (select_app(g_slotcnt)) {
 						g_slots[g_slotcnt].available = 1;
-						strncpy(g_slots[g_slotcnt].name, mszReaders, sizeof(g_slots[g_slotcnt].name));
+						strcpy_s(g_slots[g_slotcnt].name, sizeof(g_slots[g_slotcnt].name), mszReaders);
 						g_slotcnt++;
 					}
 				}
 
 				mszReaders += strlen(mszReaders) + 1;
 
+				if (g_slotcnt >= MAX_SLOTS) {
+					break;
+				}
 			}
 
 			SCardFreeMemory(g_hContext, mszReaders_orig);
@@ -887,7 +895,7 @@ CK_DEFINE_FUNCTION(CK_RV, C_GetAttributeValue)(CK_SESSION_HANDLE hSession, CK_OB
 			internal_copy_attr(&pTemplate[k], &private, sizeof(CK_BBOOL));
 			break;
 		case CKA_LABEL:
-			internal_copy_attr(&pTemplate[k], label, strlen(label) + 1);
+			internal_copy_attr(&pTemplate[k], label, (CK_ULONG)(strlen(label) + 1));
 			break;
 		case CKA_VALUE:
 			privdo3_len = get_privdo3(g_sessions[hSession].session_info.slotID, privdo3_contents, sizeof(privdo3_contents));
